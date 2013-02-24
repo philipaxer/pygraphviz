@@ -23,7 +23,9 @@ extern PyTypeObject PyIOBase_Type;
     }
     // work around to get hold of FILE*
     fd = PyObject_AsFileDescriptor($input);
-    $1 = fdopen(fd, "w");
+    $1 = fdopen(fd, "wr");
+    if(!$1)
+        $1 = fdopen(fd, "r");
 }
 
 

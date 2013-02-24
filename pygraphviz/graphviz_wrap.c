@@ -3443,7 +3443,9 @@ SWIGINTERN PyObject *_wrap_agread(PyObject *SWIGUNUSEDPARM(self), PyObject *args
     }
     // work around to get hold of FILE*
     fd = PyObject_AsFileDescriptor(obj0);
-    arg1 = fdopen(fd, "w");
+    arg1 = fdopen(fd, "wr");
+    if(!arg1)
+    arg1 = fdopen(fd, "r");
   }
   res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_Agdisc_t, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
@@ -3482,7 +3484,9 @@ SWIGINTERN PyObject *_wrap_agwrite(PyObject *SWIGUNUSEDPARM(self), PyObject *arg
     }
     // work around to get hold of FILE*
     fd = PyObject_AsFileDescriptor(obj1);
-    arg2 = fdopen(fd, "w");
+    arg2 = fdopen(fd, "wr");
+    if(!arg2)
+    arg2 = fdopen(fd, "r");
   }
   result = (int)agwrite(arg1,arg2);
   resultobj = SWIG_From_int((int)(result));

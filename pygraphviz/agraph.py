@@ -218,9 +218,6 @@ class AGraph(object):
         self.edge_attr=Attribute(self.handle,2)  # default edge attribtes
 
     def __str__(self):
-        return unicode(self).encode(self.encoding,'replace')
-
-    def __unicode__(self):
         return self.string()
 
     def __repr__(self):
@@ -1274,10 +1271,10 @@ class AGraph(object):
             t.join()
 
         if data==[]:
-            raise IOError("".join(errors))
+            raise IOError(b''.join(errors))
 
         if len(errors)>0:
-            warnings.warn("".join(errors),RuntimeWarning)
+            warnings.warn(b''.join(errors),RuntimeWarning)
 
         return b"".join(data)
 
@@ -1426,7 +1423,8 @@ class AGraph(object):
                 fh.close()
             d=None
         else:
-            d="".join( data )
+            # data alreay is bytes?!
+            d=data
         return d
 
     # some private helper functions
@@ -1439,7 +1437,7 @@ class AGraph(object):
         return True
 
 
-    def _get_fh(self, path, mode='r'):
+    def _get_fh(self, path, mode='rb'):
         """ Return a file handle for given path.
 
         Path can be a string or a file handle.
@@ -1456,7 +1454,8 @@ class AGraph(object):
 #                fh = bz2.BZ2File(path,mode=mode) # doesn't return real fh
                  fh=os.popen("bzcat "+path) # probably not portable
             else:
-                #fh = file(path,mode=mode)
+                if not 'b' in mode:
+                    mode += 'b'
                 fh = open(path,mode=mode)
         elif hasattr(path, 'write'):
             # Note, mode of file handle is unchanged.

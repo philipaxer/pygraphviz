@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 """
 An example that shows how to add your own positions to nodes
-and have graphviz "neato" position the edges. 
+and have graphviz "neato" position the edges.
 
 miles_graph() returns an undirected graph over the 128 US cities from
-the datafile miles_dat.txt.  
+the datafile miles_dat.txt.
 
 This example is described in Section 1.1 in Knuth's book [1,2].
 
@@ -23,11 +23,11 @@ References.
 
 """
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
-#    Copyright (C) 2006-2007 by 
+#    Copyright (C) 2006-2007 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Manos Renieris, http://www.cs.brown.edu/~er/
-#    Distributed with BSD license.     
+#    Distributed with BSD license.
 #    All rights reserved, see LICENSE for details.
 
 
@@ -62,10 +62,11 @@ def miles_graph():
 
     cities=[]
     for line in fh.readlines():
+        line = line.decode()
         if line.startswith("*"): # skip comments
             continue
 
-        numfind=re.compile("^\d+") 
+        numfind=re.compile("^\d+")
 
         if numfind.match(line): # this line is distances
             dist=line.split()
@@ -83,7 +84,7 @@ def miles_graph():
             n=G.get_node(city)
             # assign positions, scale to be something reasonable in points
             n.attr['pos']="%f,%f)"%(-(float(x)-7000)/10.0,(float(y)-2000)/10.0)
-            # assign node size, in sqrt of 1,000,000's of people 
+            # assign node size, in sqrt of 1,000,000's of people
             d=math.sqrt(float(pop)/1000000.0)
             n.attr['height']="%s"%d
             n.attr['width']="%s"%d
@@ -93,7 +94,7 @@ def miles_graph():
             n.attr['label']=' '
 
 
-    return G            
+    return G
 
 if __name__ == '__main__':
     import warnings
@@ -103,11 +104,11 @@ if __name__ == '__main__':
     warnings.simplefilter('ignore', RuntimeWarning)
 
     G=miles_graph()
-    print "Loaded miles_dat.txt containing 128 cities."
-   
+    print ("Loaded miles_dat.txt containing 128 cities.")
+
     G.string()
     G.write("miles.dot")
-    print "Wrote miles.dot"
+    print ("Wrote miles.dot")
     G.draw("miles.png",prog='neato',args='-n2')
-    print "Wrote miles.png"
+    print ("Wrote miles.png")
 

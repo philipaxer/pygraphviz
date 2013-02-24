@@ -8,18 +8,18 @@ and
 http://www.djangobook.com/en/beta/chapter11/
 
 """
-#    Copyright (C) 2007 by 
+#    Copyright (C) 2007 by
 #    Aric Hagberg <hagberg@lanl.gov>
 #    Dan Schult <dschult@colgate.edu>
 #    Manos Renieris, http://www.cs.brown.edu/~er/
-#    Distributed with BSD license.     
+#    Distributed with BSD license.
 #    All rights reserved, see LICENSE for details.
 __author__ = """Aric Hagberg (hagberg@lanl.gov)"""
 
 try:
     from django.http import HttpResponse
-except ImportError: # this won't run without Django, print message 
-    print "Django not found."
+except ImportError: # this won't run without Django, print message
+    print ("Django not found.")
 
 def pygraphviz_graph(request):
     import pygraphviz as P
@@ -36,7 +36,7 @@ def pygraphviz_graph(request):
     return HttpResponse(png, mimetype='image/png')
 
 if __name__ == '__main__':
-    print """This code works with the Django web framework
+    print ("""This code works with the Django web framework)
 and should run as a django "view".
 See djangoproject.com for info.
 

@@ -13,4 +13,4 @@ A.add_edge(4,6)
 # make a subgraph with rank='same'
 B=A.add_subgraph([4,5,6],name='s1',rank='same')
 B.graph_attr['rank']='same'
-print A.string() # print dot file to standard output
+print (A.string()) # print dot file to standard output
