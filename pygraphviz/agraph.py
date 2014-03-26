@@ -149,6 +149,13 @@ class AGraph(object):
                     string=thing # this is a dot format graph in a string
                 else:
                     filename=thing  # assume this is a file name
+            elif self._is_bytes_like(thing):
+                pattern=re.compile(b'(strict)?\s*(graph|digraph).*{.*}\s*',
+                                   re.DOTALL)
+                if pattern.match(thing):
+                    string=thing.decode() # this is a dot format graph in a string
+                else:
+                    filename=thing.decode()  # assume this is a file name
             else:
                 raise TypeError('Unrecognized input %s'%thing)
 
@@ -256,10 +263,10 @@ class AGraph(object):
 #        self.add_edge(u,v)
 
     def get_name(self):
-       name=gv.agnameof(self.handle)
-       if name is not None:
-           name=name.decode(self.encoding)
-       return name
+        name=gv.agnameof(self.handle)
+        # if name is not None:
+        #     name=name.decode(self.encoding)
+        return name
 
     name=property(get_name)
 
@@ -273,10 +280,10 @@ class AGraph(object):
         >>> G=AGraph()
         >>> G.add_node('a')
         >>> G.nodes()
-        [u'a']
+        ['a']
         >>> G.add_node(1) # will be converted to a string
         >>> G.nodes()
-        [u'a', u'1']
+        ['a', '1']
 
         Attributes can be added to nodes on creation
         (attribute values must be strings)
@@ -307,7 +314,7 @@ class AGraph(object):
         >>> nlist=['a','b',1,'spam']
         >>> G.add_nodes_from(nlist)
         >>> sorted(G.nodes())
-        [u'1', u'a', u'b', u'spam']
+        ['1', 'a', 'b', 'spam']
 
 
         Attributes can be added to nodes on creation
@@ -335,7 +342,8 @@ class AGraph(object):
             nh=gv.agnode(self.handle,n,_Action.find)
             gv.agdelnode(self.handle,nh)
         except KeyError:
-            raise KeyError("Node %s not in graph."%n.decode(self.encoding))
+            # raise KeyError("Node %s not in graph."%n.decode(self.encoding))
+            raise KeyError("Node %s not in graph."%n)
 
     delete_node=remove_node
 
@@ -421,7 +429,7 @@ class AGraph(object):
         >>> G=AGraph()
         >>> G.add_edge('a','b')
         >>> G.edges()
-        [(u'a', u'b')]
+        [('a', 'b')]
 
         The optional key argument allows assignment of a key to the
         edge.  This is especially useful to distinguish between
@@ -431,11 +439,11 @@ class AGraph(object):
         >>> G.add_edge('a','b','first')
         >>> G.add_edge('a','b','second')
         >>> sorted(G.edges(keys=True))
-        [(u'a', u'b', u'first'), (u'a', u'b', u'second')]
+        [('a', 'b', 'first'), ('a', 'b', 'second')]
 
         Attributes can be added when edges are created
 
-        >>> G.add_edge(u'a',u'b',color='green')
+        >>> G.add_edge('a','b',color='green')
 
         Attributes must be valid strings.
 
@@ -488,7 +496,7 @@ class AGraph(object):
         >>> G.add_edge('a','b')
         >>> edge=G.get_edge('a','b')
         >>> print edge
-        (u'a', u'b')
+        ('a', 'b')
 
         With optional key argument will only get edge matching (u,v,key).
 
@@ -550,9 +558,9 @@ class AGraph(object):
         >>> G.add_edge('a','b')
         >>> G.add_edge('c','d')
         >>> print sorted(G.edges())
-        [(u'a', u'b'), (u'c', u'd')]
+        [('a', 'b'), ('c', 'd')]
         >>> print G.edges('a')
-        [(u'a', u'b')]
+        [('a', 'b')]
         """
         return list(self.edges_iter(nbunch=nbunch,keys=keys))
 
@@ -968,7 +976,8 @@ class AGraph(object):
         try:
             handle=gv.agsubg(self.handle,name, _Action.create)
         except TypeError:
-            raise TypeError("Subgraph name must be a string: %s"%name.decode(self.encoding))
+            # raise TypeError("Subgraph name must be a string: %s"%name.decode(self.encoding))
+            raise TypeError("Subgraph name must be a string: %s"%name)
 
         H=self.__class__(strict=self.strict,
                          directed=self.directed,
@@ -1174,6 +1183,7 @@ class AGraph(object):
         # this will fail for graphviz-2.8 because of a broken nop
         # so use tempfile version below
         return self.draw(format='dot',prog='nop').decode(self.encoding)
+        # return self.draw(format='dot',prog='nop')
 
     def to_string(self):
         """Return a string (unicode) representation of graph in dot format."""
@@ -1187,7 +1197,8 @@ class AGraph(object):
         fh.seek( 0 )
         data = fh.read()
         fh.close()
-        return data.decode(self.encoding)
+        # return data.decode(self.encoding)
+        return data
 
     def string(self):
         """Return a string (unicode) represetnation of graph in dot format."""
@@ -1209,7 +1220,10 @@ class AGraph(object):
         """
         from tempfile import TemporaryFile
         fh = TemporaryFile()
-        fh.write(string.encode(self.encoding))
+        if isinstance(string, str):
+            string = string.encode(self.encoding)
+        # fh.write(string.encode(self.encoding))
+        fh.write(string)
         fh.seek(0)
         # Cover TemporaryFile wart: on 'nt' we need the file member
         if hasattr(fh, 'file'):
@@ -1221,15 +1235,22 @@ class AGraph(object):
 
     def _get_prog(self,prog):
         # private: get path of graphviz program
-        try:
-            gvprogs=dict.fromkeys(\
-                ['neato','dot','twopi','circo','fdp','nop',
-                 'wc','acyclic','gvpr','gvcolor','ccomps','sccmap','tred',
-                 'sfdp'])
-            p=gvprogs[prog]
-        except KeyError:
+        # try:
+        #     gvprogs=dict.fromkeys(\
+        #         ['neato','dot','twopi','circo','fdp','nop',
+        #          'wc','acyclic','gvpr','gvcolor','ccomps','sccmap','tred',
+        #          'sfdp'])
+        #     p=gvprogs[prog]
+        # except KeyError:
+        #     raise ValueError("Program %s is not one of: %s."%\
+        #                    (prog,', '.join(gvprogs.keys())))
+        gvprogs = set(['neato','dot','twopi','circo','fdp','nop',
+                       'wc','acyclic','gvpr','gvcolor','ccomps','sccmap','tred',
+                       'sfdp'])
+        if prog not in gvprogs:
             raise ValueError("Program %s is not one of: %s."%\
-                           (prog,', '.join(gvprogs.keys())))
+                             (prog,', '.join(sorted(gvprogs))))
+
 
         try: # user must pick one of the graphviz programs...
             runprog = self._which(prog)
@@ -1297,7 +1318,8 @@ class AGraph(object):
         import os
         from tempfile import TemporaryFile
         fmt='dot'
-        data=self._run_prog(prog,' '.join([args,"-T",fmt])).decode()
+        # data=self._run_prog(prog,' '.join([args,"-T",fmt])).decode()
+        data=self._run_prog(prog,' '.join([args,"-T",fmt]))
         self.from_string(data)
         self.has_layout=True
         return
@@ -1436,6 +1458,13 @@ class AGraph(object):
             return False
         return True
 
+    def _is_bytes_like(self,obj): # Extension of _is_string_like
+        try:
+            obj + b''
+        except (TypeError, ValueError):
+            return False
+        return True
+
 
     def _get_fh(self, path, mode='rb'):
         """ Return a file handle for given path.
@@ -1528,14 +1557,15 @@ class Node(unicode):
 
     def get_handle(self):
         """Return pointer to graphviz node object."""
-        return gv.agnode(self.ghandle,self.encode(self.encoding),_Action.find)
+        # return gv.agnode(self.ghandle,self.encode(self.encoding),_Action.find)
+        return gv.agnode(self.ghandle,self,_Action.find)
 
 #    handle=property(get_handle)
 
     def get_name(self):
         name=gv.agnameof(self.handle)
-        if name is not None:
-            name=name.decode(self.encoding)
+        # if name is not None:
+        #     name=name.decode(self.encoding)
         return name
 
     name=property(get_name)
@@ -1606,8 +1636,8 @@ class Edge(tuple):
 
     def get_name(self):
         name=gv.agnameof(self.handle)
-        if name is not None:
-            name=name.decode(self.encoding)
+        # if name is not None:
+        #     name=name.decode(self.encoding)
         return name
 
     name=property(get_name)
@@ -1664,13 +1694,16 @@ class Attribute(DictMixin):
 
 
     def __getitem__(self, name):
-        item=gv.agget(self.handle,name.encode(self.encoding))
+        
+        # item=gv.agget(self.handle,name.encode(self.encoding))
+        item=gv.agget(self.handle,name)
         if item is None:
             ah=gv.agattr(self.handle,self.type,
                          name,
                          None)
             item=gv.agattrdefval(ah)
-        return item.decode(self.encoding)
+        # return item.decode(self.encoding)
+        return item
 
     def __delitem__(self, name):
         gv.agattr(self.handle,self.type,name,'')
@@ -1697,10 +1730,17 @@ class Attribute(DictMixin):
         while True:
             try:
                 ah=gv.agnxtattr(self.handle,self.type,ah)
-                yield (gv.agattrname(ah).decode(self.encoding),
-                       gv.agattrdefval(ah).decode(self.encoding))
+                # yield (gv.agattrname(ah).decode(self.encoding),
+                #        gv.agattrdefval(ah).decode(self.encoding))
+                yield (gv.agattrname(ah), gv.agattrdefval(ah))
             except KeyError: # gv.agattrdefval returned KeyError, skip
                 continue
+
+    def __str__(self):
+        return str(dict(self))
+
+    def __repr__(self):
+        return repr(dict(self))
 
 class ItemAttribute(Attribute):
     """Attributes for individual nodes and edges.
@@ -1747,8 +1787,8 @@ class ItemAttribute(Attribute):
 
     def __getitem__(self, name):
         val = gv.agget(self.handle,name)
-        if val is not None:
-            val = val.decode(self.encoding)
+        # if val is not None:
+        #     val = val.decode(self.encoding)
         return val
 
     def __delitem__(self, name):
@@ -1767,8 +1807,9 @@ class ItemAttribute(Attribute):
                 except: # no default, gv.getattrdefval raised error
                     pass
                 # unique value for this edge
-                yield (gv.agattrname(ah).decode(self.encoding),
-                       value.decode(self.encoding))
+                # yield (gv.agattrname(ah).decode(self.encoding),
+                #        value.decode(self.encoding))
+                yield (gv.agattrname(ah), value)
             except KeyError: # gv.agxget returned KeyError, skip
                 continue
 

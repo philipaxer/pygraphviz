@@ -36,8 +36,8 @@ def pygraphviz_graph(request):
     return HttpResponse(png, mimetype='image/png')
 
 if __name__ == '__main__':
-    print ("""This code works with the Django web framework)
+    print ("""This code works with the Django web framework
 and should run as a django "view".
 See djangoproject.com for info.
 
-"""
+""")
