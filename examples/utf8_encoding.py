@@ -8,22 +8,23 @@ A=pgv.AGraph(encoding='UTF-8')
 
 # nodes, attributes, etc can be strings or unicode
 A.add_node(1,label='plain string')
-A.add_node(2,label=u'unicode')
+A.add_node(2,label='unicode')
 
 # you can enter unicode text as
-hello=u'Здравствуйте!' # in
+hello='Здравствуйте!' # in
 A.add_node(3,label=hello)
 
 # or using unicode code points
-hello=u'\u0417\u0434\u0440\u0430\u0432\u0441\u0442\u0432\u0443\u0439\u0442\u0435!'
+hello='\u0417\u0434\u0440\u0430\u0432\u0441\u0442\u0432\u0443\u0439\u0442\u0435!'
 A.add_node(hello) # unicode node label
 
-goodbye=u"До свидания"
+goodbye="До свидания"
 A.add_edge(1,hello,key=goodbye)
 
-A.add_edge(u"שלום",hello)
+A.add_edge("שלום",hello)
 #A.add_edge(1,3,hello="こんにちは / ｺﾝﾆﾁﾊ".decode('UTF-8'))
-A.add_edge(1,u"こんにちは")
+A.add_edge(1,"こんにちは")
 
 print (A) # print to screen
-A.write('utf8.dot') # write to simple.dot
+A.write('utf8.dot') # write to utf8.dot
+A.draw('utf8_encoding.png', prog='dot') # draw png

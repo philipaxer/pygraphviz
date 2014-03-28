@@ -8,12 +8,12 @@ String representation
 ---------------------
 
 >>> A=AGraph(name='')
->>> print A
+>>> print(A)
 strict graph {
 }
 <BLANKLINE>
 
->>> print A.string().expandtabs()
+>>> print(A.string().expandtabs())
 strict graph {
 }
 <BLANKLINE>
@@ -23,7 +23,7 @@ strict graph {
 
 >>> A=AGraph(name='test')
 >>> A.add_path([1,2])
->>> print A.string().expandtabs()
+>>> print(A.string().expandtabs())
 strict graph test {
         1 -- 2;
 }
@@ -35,7 +35,7 @@ strict graph test {
 >>> A=AGraph(name='test graph')
 >>> A.add_path([1,2,3,4,5,6,7,8,9,10])
 >>> A.add_node(11)
->>> print A.string().expandtabs()
+>>> print(A.string().expandtabs())
 strict graph "test graph" {
         1 -- 2;
         2 -- 3;
@@ -99,7 +99,7 @@ AttributeError: Graph has no layout information, see layout()
 >>> A.draw(fname,prog='foo')
 Traceback (most recent call last):
 ...
-ValueError: Program foo is not one of: twopi, gvcolor, wc, ccomps, tred, sccmap, fdp, circo, neato, acyclic, nop, gvpr, dot, sfdp.
+ValueError: Program foo is not one of: acyclic, ccomps, circo, dot, fdp, gvcolor, gvpr, neato, nop, sccmap, sfdp, tred, twopi, wc.
 
 >>> os.close(fd)
 >>> os.unlink(fname)
